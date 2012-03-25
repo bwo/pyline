@@ -17,13 +17,12 @@ class Answer(object):
     def get_candidates(self):
         return None
     def validate(self, result):
-        pass
+        return result
     def do_convert(self, chosen, entered):
         return chosen # trivial conversion
     def convert(self, chosen, entered):
         res = self.do_convert(chosen, entered)
-        self.validate(res)
-        self.result = res
+        self.result = self.validate(res)
 
 class Boundable(Answer):
     def __init__(self, below=None, above=None):
@@ -35,6 +34,7 @@ class Boundable(Answer):
     def validate(self, result):
         if not self.valid(result):
             raise BadRange, self.explain_bounds()
+        return result
     def explain_bounds(self):
         e = []
         if self.below: e.append("below %s" % self.below)
@@ -47,6 +47,7 @@ class RegularAnswer(Answer):
     def validate(self, result):
         if not self.pat.match(result):
             raise BadAnswer
+        return result
 
 class SimpleConversion(Answer):
     def __init__(self, func, explanation):
@@ -77,6 +78,7 @@ class Choice(Answer):
         if result not in self.choices:
             raise BadChoice, "answer must be one of %s" % \
                   listdisplay.inline_simple(None, self.choices, separator="; ")
+        return result
 
 class Pathname(Answer):
     def __init__(self, directory=None, glob="*"):
@@ -88,6 +90,7 @@ class Pathname(Answer):
     def validate(self, result):
         if not os.path.exists(result):
             raise BadAnswer, "File or directory does not exist."
+        return result
     def do_convert(self, ans, entered):
         return os.path.join(self.directory, ans)
 
@@ -102,7 +105,7 @@ class File(Pathname):
                     os.path.isfile(f)]
         return None
     def validate(self, result):
-        pass # any failure will already be apparent in convert().
+        return result # any failure will already be apparent in convert().
     def do_convert(self, ans, entered):
         ans = os.path.join(self.directory, ans)
         if not os.path.normpath(ans).startswith(self.directory):
@@ -132,8 +135,6 @@ class MenuAnswer(Answer):
             return ans
 
 class AgreeAnswer(Answer):
-    def convert(self, chosen, entered):
-        self.result = self.validate(chosen)
     def validate(self, result):
         if not (result == 'y' or result == 'yes' or \
                 result == 'n' or result == 'no'):
