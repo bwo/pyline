@@ -1,8 +1,7 @@
 PyLine
 ======
 
-**PyLine** is a Python rewrite/reinterpretation of the Ruby CLI
-  library HighLine_.
+**PyLine** is a Python rewrite/reinterpretation of the Ruby CLI library HighLine_.
 
 .. _HighLine: http://highline.rubyforge.org/doc/
 
