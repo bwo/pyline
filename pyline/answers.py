@@ -77,7 +77,7 @@ class Choice(Answer):
     def validate(self, result):
         if result not in self.choices:
             raise BadChoice, "answer must be one of %s" % \
-                  listdisplay.inline_simple(None, self.choices, separator="; ")
+                  listdisplay.inline_simple(self.choices, "; ")
         return result
 
 class Pathname(Answer):

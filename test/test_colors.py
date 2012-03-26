@@ -11,7 +11,7 @@ def test_using_colors(capsys):
     with p.no_colors():
         p.say("this should be {0.black:uninterpreted}")
         out, err = capsys.readouterr()
-        assert out == "this should be {0.black:uninterpreted}\n"
+        assert out == "this should be uninterpreted\x1b[0m\n"
     p.say("colored {0.black.on_red.underline:again}")
     out, err = capsys.readouterr()
     assert out == "colored \x1b[30m\x1b[41m\x1b[4magain\x1b[0m\x1b[0m\n"

@@ -36,8 +36,7 @@ class MenuOnly(Layout):
     def __init__(self, flow=None, flowoption=None):
         Layout.__init__(self, flow or inline, flowoption)
     def __call__(self, menu):
-        return menu.pyline.listdisplay(list(menu), self.flow, self.flowoption) +\
-                        menu.prompt
+        return menu.pyline.listdisplay(list(menu), self.flow, self.flowoption) + "\n" + menu.prompt
 
 class Menu(Question):
     def __init__(self, items=None, hidden=None, index=None,
@@ -46,6 +45,9 @@ class Menu(Question):
                  header='', prompt='? ', layout=List(), shell=False,
                  none_on_handled=False, responses=None, pyline=None, **k):
         Question.__init__(self, prompt, MenuAnswer(self), **k)
+        has_help = False
+        self.has_help_help = has_help_help = False
+
         self.items = []
         self.hidden = []
         for i in items or []:
@@ -59,8 +61,6 @@ class Menu(Question):
         self.prompt = prompt
         self.layout = layout
         self.shell = shell
-        has_help = False
-        self.has_help_help = has_help_help = False
         for i in itertools.chain(self.items, self.hidden):
             if i.help:
                 has_help = True
@@ -94,13 +94,13 @@ class Menu(Question):
                                   help=self.__class__.default_help))
             self.has_help_help = True
     def add_choices(self, names, action):
-        [self.choice(MenuChoice(name, action)) for name in names]
+        [self.add_choice(MenuChoice(name, action)) for name in names]
     def add_hidden(self, choice):
         with reassigning(self, "items", self.hidden):
-            self.choice(choice)
+            self.add_choice(choice)
     def add_hiddens(self, names, action):
         with reassigning(self, "items", self.hidden):
-            self.choices(names, action)
+            self.add_choices(names, action)
 
     def options(self):
         allitems = self.items + self.hidden
@@ -137,7 +137,7 @@ class Menu(Question):
         with reassignings(self, ("index","select_by"), (noindex,NAME)):
             return list(c for c in self.options() if c.help)
 
-    def default_help(self):
+    def default_help(self, *i):
         self.pyline.say('This command will display helpful messages about '\
 'functionality, like this one. To see the help for a specific topic '\
 'enter:\n\thelp [TOPIC]\nTry asking for help on any of the following:\n\n%s\n'%\

@@ -1,7 +1,6 @@
 import re, sys
 from . import system
 from .answers import *
-from .listdisplay import inline_simple
 from .utils import remove_capture_whitespace, Trie, NotAPrefix, NotAUniquePrefix
 
 character = system.get_character

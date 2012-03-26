@@ -55,7 +55,8 @@ pick one:
     set_inp(inp,'1')
     p.choose(*mitems, header='pick one', layout=pyline.menu.MenuOnly())
     assert no_clear(out.getvalue()) == '''\
-1. foo, 2. bar, 3. baz, or 4. this one is longer? '''
+1. foo, 2. bar, 3. baz, or 4. this one is longer
+? '''
     reset(out)
     set_inp(inp,'1')
     p.choose(*mitems, header='pick one', layout=pyline.menu.MenuOnly(pyline.listdisplay.rows))
@@ -63,7 +64,8 @@ pick one:
 1. foo
 2. bar
 3. baz
-4. this one is longer? '''
+4. this one is longer
+? '''
     reset(out)
     set_inp(inp,'1')
     p.choose(*mitems, header='pick one', layout=pyline.menu.OneLine(), prompt='which do you prefer? ')

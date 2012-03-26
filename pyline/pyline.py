@@ -4,6 +4,7 @@ import sys
 import textwrap
 
 from . import question
+from . import colors
 from .system import *
 from .listdisplay import *
 from .answers import *
@@ -32,9 +33,9 @@ class PyLine(object):
     def __init__(self, out=None, inp=None, wrap_at=None,
                  page_at=None, colors=True, colorscheme=None):
         self.wrap_at = wrap_at
-        self.colors = colors
         self.out = out or sys.stdout
         self.inp = inp or sys.stdin
+        self.colors = colors# if self.inp.isatty() else False
         self.cols, self.rows = self.dimensions()
         self.colorscheme = colorscheme
         self.page_at = page_at or self.rows - 2
@@ -124,7 +125,7 @@ Context manager: on entry, output will no longer be colorized. ::
     p = pyline.PyLine(colors=True, ...)
     [...]
     with p.no_colors():
-        p.say("{__colors.red:this will be printed verbatim, not colorized}")
+        p.say("{__colors.red:this will not be colorized}")
     p.say("{__colors.red:this will be red}")
     
 
@@ -134,9 +135,7 @@ Context manager: on entry, output will no longer be colorized. ::
     def effectize_string(self, s, vals=None, keys=None):
         keys = keys or {}
         vals = vals or ()
-        if self.colors:
-            return utils.effectize_string(s, vals, keys, self.colorscheme)
-        return s
+        return utils.effectize_string(s, vals, keys, self.colorscheme if self.colors else colors.none)
 
     def ask(self, question=None, prompt=None, answer=None, **k):
         """The most general method for asking a question.
@@ -250,6 +249,20 @@ Context manager: on entry, output will no longer be colorized. ::
         m.pyline = self
         res = self.ask(question=m)
         return m.selected(res)
+
+    def shell(self, *items_or_menu, **k):
+        if len(items_or_menu) == 1 and isinstance(items_or_menu[0], Menu):
+            m = items_or_menu[0]
+        else:
+            m = Menu(**k)
+            for i in items_or_menu:
+                m.add_choice(i)
+        m.pyline = self
+        m.shell = True
+        res = self.ask(question=m)
+        while m.selected(res) != 'quit':
+            res = self.ask(question=m)
+            
 
     def listdisplay(self, items, mode=None, *args):
         """Format a list of items as a string for display.

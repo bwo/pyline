@@ -53,6 +53,12 @@ class Effect(EffectBase):
     def __str__(self):
         return self.code
 
+class NullEffect(EffectBase):
+    def __getattribute__(self, _):
+        return self
+    def __format__(self, text):
+        return text
+
 class Replacer(Effect):
     def __init__(self, orig, repl, *names):
         self.orig = orig
@@ -122,3 +128,4 @@ Effect('\033[46m', 'on_cyan')
 Effect('\033[47m', 'on_white')
 Replacer('\0', ']', 'zb')
 e = EffectBase()
+none = NullEffect()
