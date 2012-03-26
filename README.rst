@@ -4,7 +4,7 @@ PyLine
 **PyLine** is a Python rewrite/reinterpretation of the Ruby CLI
   library HighLine_.
 
-.. HighLine: http://highline.rubyforge.org/doc/
+.. _HighLine: http://highline.rubyforge.org/doc/
 
 It supports colored output, user interaction (via simple questions or
 complex menus), auto-paged, column-wrapped output, and almost no
