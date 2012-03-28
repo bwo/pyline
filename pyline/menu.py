@@ -38,17 +38,6 @@ class MenuOnly(Layout):
     def __call__(self, menu):
         return menu.pyline.listdisplay(list(menu), self.flow, self.flowoption) + "\n" + menu.prompt
 
-class ShellLayout(Layout):
-    def __init__(self, primary):
-        self.primary = primary
-        self.full = True
-    def __call__(self, menu, full=None):
-        if full is None: full = self.full
-        self.full = False
-        if full:
-            return self.primary(menu)
-        return menu.prompt
-
 class Menu(Question):
     def __init__(self, items=None, hidden=None, index=None,
                  index_suffix=". ",
@@ -87,15 +76,6 @@ class Menu(Question):
         self.responses.update(responses or {}) # set in Question.__init__
         self.pyline = pyline
         
-    def do_shell(self):
-        with reassignings(self, ["shell", "layout"], [True, ShellLayout(self.layout)]):
-            try:
-                while True:
-                    res = self.pyline.ask(self)
-                    self.selected(res)
-            except ShellExit:
-                pass        
-
     def add_choice(self, choice):
         if isinstance(choice, tuple):
             choice = MenuChoice(*choice)
@@ -113,7 +93,7 @@ class Menu(Question):
                                   action=self.choose_help,
                                   help=self.__class__.default_help))
             self.has_help_help = True
-    def add_choices(self, names, action):
+    def add_choices(self, names, action=None):
         [self.add_choice(MenuChoice(name, action)) for name in names]
     def add_hidden(self, choice):
         with reassigning(self, "items", self.hidden):
@@ -256,8 +236,9 @@ def repeat_shell(name, help, altlayout=None):
         if altlayout:
             m.pyline.say(altlayout(m))
         else:
-            laidout = m.layout(m, True)
+            laidout = m.layout(m)
             if laidout.endswith(m.prompt):
-                laidout = laidout.rstrip(m.prompt).rstrip()
+                laidout = laidout.rstrip(m.prompt)
+                if laidout[-1] == '\n': laidout = laidout[:-1]
             m.pyline.say(laidout)
     return MenuChoice(name, repeat, help)

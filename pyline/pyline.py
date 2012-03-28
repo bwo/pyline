@@ -147,13 +147,23 @@ Context manager: on entry, output will no longer be colorized. ::
         :returns: the user's answer.
         
 """
+        q = self._prep_question(question, prompt, answer, **k)
+        if q.gather is not False:
+            return self.do_gather(q)
+        self._say_question(q)
+        return self._answer_question(q)
+
+    def _say_question(self, q):
+        self.say(str(q))
+        
+    def _prep_question(self, question, prompt, answer, **k):
         if not answer: answer = Answer()
         if not question:
             q = Question(prompt, answer, **k)
         else: q = question
-        if q.gather is not False:
-            return self.do_gather(q)
-        self.say(str(q))
+        return q
+
+    def _answer_question(self, q):
         while 1:
             answer = self.get_response(q)
             answer = q.answer_or_default(answer)
@@ -258,11 +268,14 @@ Context manager: on entry, output will no longer be colorized. ::
             for i in items_or_menu:
                 m.add_choice(i)
         m.pyline = self
-        m.shell = True
-        m.do_shell()
-#        res = self.ask(question=m)
-#        while m.selected(res) != 'quit':
-#            res = self.ask(question=m)
+        res = self.ask(question=m)
+        try:
+            while True:
+                m.selected(res)
+                self.say(m.prompt)
+                res = self._answer_question(m)
+        except ShellExit:
+            pass
             
 
     def listdisplay(self, items, mode=None, *args):
