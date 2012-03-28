@@ -259,9 +259,10 @@ Context manager: on entry, output will no longer be colorized. ::
                 m.add_choice(i)
         m.pyline = self
         m.shell = True
-        res = self.ask(question=m)
-        while m.selected(res) != 'quit':
-            res = self.ask(question=m)
+        m.do_shell()
+#        res = self.ask(question=m)
+#        while m.selected(res) != 'quit':
+#            res = self.ask(question=m)
             
 
     def listdisplay(self, items, mode=None, *args):
@@ -298,4 +299,12 @@ Context manager: on entry, output will no longer be colorized. ::
     def do_gather(self, q):
         g = q.gather
         q.gather = False
-        return gather_dispatch[type(g)](g, self, q) 
+        return gather_dispatch[type(g)](g, self, q)
+
+    def install(self):
+        '''insert aliases for say(), shell(), choose(), ask() and the other question-asking methods into the global namespace of the caller.
+'''
+        caller = sys._getframe(1)
+        install_these = 'say shell choose ask agree y_or_n_style_q yes_or_no_style_q y_or_n_q yes_or_no_q'.split()
+        for install_this in install_these:
+            caller.f_globals[install_this] = getattr(self, install_this)

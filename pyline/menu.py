@@ -38,6 +38,17 @@ class MenuOnly(Layout):
     def __call__(self, menu):
         return menu.pyline.listdisplay(list(menu), self.flow, self.flowoption) + "\n" + menu.prompt
 
+class ShellLayout(Layout):
+    def __init__(self, primary):
+        self.primary = primary
+        self.full = True
+    def __call__(self, menu, full=None):
+        if full is None: full = self.full
+        self.full = False
+        if full:
+            return self.primary(menu)
+        return menu.prompt
+
 class Menu(Question):
     def __init__(self, items=None, hidden=None, index=None,
                  index_suffix=". ",
@@ -75,6 +86,15 @@ class Menu(Question):
         self.none_on_handled = none_on_handled
         self.responses.update(responses or {}) # set in Question.__init__
         self.pyline = pyline
+        
+    def do_shell(self):
+        with reassignings(self, ["shell", "layout"], [True, ShellLayout(self.layout)]):
+            try:
+                while True:
+                    res = self.pyline.ask(self)
+                    self.selected(res)
+            except ShellExit:
+                pass        
 
     def add_choice(self, choice):
         if isinstance(choice, tuple):
@@ -115,8 +135,8 @@ class Menu(Question):
             return by_index
         return by_index + allitems
 
-    def choose_help(self, *a):
-        line = a[1].strip()
+    def choose_help(self, chosen, mn, line):
+        line = line.strip()
         res = self.items[-1] if self.items[-1].name == 'help' else self.hidden[-1]
         if line:
             with reassigning(self, 'answer', MenuHelpAnswer(self)):
@@ -146,7 +166,7 @@ self.pyline.listdisplay(self.helptopics(), columns_across))
     def selected(self, choice):
         if isinstance(choice, tuple): # shell or help
             choice, args = choice
-            r = choice(args)
+            r = choice(self, args)
         else:
             r = choice()
         if self.none_on_handled:
@@ -224,3 +244,20 @@ class MenuChoice(object):
         if not self.action:
             return self.name
         return self.action(*((self.name,)+rest))
+
+class ShellExit(Exception):
+    pass
+def quit_shell(name, help):
+    def qs(*a): raise ShellExit
+    return MenuChoice(name, qs, help)
+
+def repeat_shell(name, help, altlayout=None):
+    def repeat(opt, m, *a):
+        if altlayout:
+            m.pyline.say(altlayout(m))
+        else:
+            laidout = m.layout(m, True)
+            if laidout.endswith(m.prompt):
+                laidout = laidout.rstrip(m.prompt).rstrip()
+            m.pyline.say(laidout)
+    return MenuChoice(name, repeat, help)
