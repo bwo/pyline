@@ -86,65 +86,33 @@ More complex questions::
 
 Menus can also act as *shells*, associating each choice with a function to be called with the rest of the line::
 
-    >>> m = Menu(header="perform stupid string tricks", items=[("reverse", lambda opt, line: p.say(line[::-1]), "reverse the line"), ("upcase", lambda opt, line: p.say(line.upper()), "make the string uppercase"), ("quit", None, "quit")], shell=True)
+    >>> m = Menu(header="perform stupid string tricks", items=[("reverse", lambda opt, mn, line: mn.pyline.say(line[::-1]), "reverse the string"), ("upcase", lambda opt, mn, line: mn.pyline.say(line.upper()), "make the string uppercase"), menu.quit_shell("quit", "quit the shell"), menu.repeat_shell("repeat", "repeat the question")], shell=True)
     >>> p.shell(m)
     perform stupid string tricks:
-    1. reverse
+    1. reverse 
     2. upcase
     3. quit
-    4. help
-    ? help reverse
-    = reverse
+    4. repeat
+    5. help
+    ? reverse this stuff
+    ffuts siht
+    ? upcase this other stuff
+    THIS OTHER STUFF
+    ? help rep
+    = repeat
     
-    reverse the line
+    repeat the question
+    ? rep  
     perform stupid string tricks:
     1. reverse
     2. upcase
     3. quit
-    4. help
-    ? help help
-    This command will display helpful messages about functionality, like this one.
-    To see the help for a specific topic enter:
-            help [TOPIC]
-    Try asking for help on any of the following:
-    
-    reverse      upcase       quit         help       
-    
-    perform stupid string tricks:
-    1. reverse
-    2. upcase
-    3. quit
-    4. help
-    ? help quit
-    = quit
-    
-    quit
-    perform stupid string tricks:
-    1. reverse
-    2. upcase
-    3. quit
-    4. help
-    ? reverse this
-    siht
-    perform stupid string tricks:
-    1. reverse
-    2. upcase
-    3. quit
-    4. help
-    ? upcase this stuff
-    THIS STUFF
-    perform stupid string tricks:
-    1. reverse
-    2. upcase
-    3. quit
-    4. help
+    4. repeat
+    5. help
     ? q
-    >>>
+    >>> 
 
-Of course:
-
-- You wouldn't really pass everything through in lambdas like that
-- The options shouldn't necessarily be repeated every time through.
+Of course that is not how you would normally populate the menu object.
 
 Lots of stuff is not demonstrated here, including non-blocking keyboard input, nifty autodetection of terminal dimensions, other kinds of questions/answers, different layouts for menus, lists, and questions, and such things.
 
