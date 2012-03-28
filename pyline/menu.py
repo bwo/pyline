@@ -1,5 +1,5 @@
 import itertools, string
-import pyline
+
 from .question import Question
 from .answers import *
 from .listdisplay import *
