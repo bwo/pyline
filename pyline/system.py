@@ -51,9 +51,4 @@ else:
                 output(["stty",state])
 
         def terminal_size():
-            out = output("stty")
-            m = re.search(r"\brows = (\d+).*\bcolumns = (\d+)", out)
-            if m:
-                return int(m.group(2)), int(m.group(1))
-            rows, cols = [int(o) for o in output(["stty","size"]).split()]
-            return (cols, rows)
+            return tuple(map(int, output(["stty", "size"]).split()))
