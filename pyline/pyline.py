@@ -121,6 +121,7 @@ class PyLine(object):
 
     def say(self, s, *vals, **keys):
         s = str(s)
+        if not s: return
         s = self.effectize_string(s, vals, keys)
         s, ws = utils.remove_capture_whitespace(s)
         lines = s.split('\n')
@@ -264,10 +265,11 @@ Context manager: on entry, output will no longer be colorized. ::
             line = raw_input()
             if set_here:
                 clear_completer()
+            return line
         else:
             line = self.inp.readline()
-        if not line: raise EOFError
-        return line
+            if not line: raise EOFError
+            return line
 
     def choose(self, *items_or_menu, **k):
         """Make a choice from a menu.
