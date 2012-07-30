@@ -77,9 +77,9 @@ def test_shell():
     out = sio()
     p = pyline.pyline.PyLine(inp=inp,out=out)
     items = [pyline.menu.MenuChoice(*t) for t in (
-        ("double", lambda k,rest:rest+' '+rest),
-        ("reverse", lambda k, rest: rest[::-1]),
-        ("ls", lambda k, rest: os.listdir(os.path.split(__file__)[0])),
+        ("double", lambda choice, menu, rest:rest+' '+rest),
+        ("reverse", lambda choice, menu, rest: rest[::-1]),
+        ("ls", lambda choice, menu, rest: os.listdir(os.path.split(__file__)[0])),
         )]
     m = pyline.menu.Menu(items, shell=True, header="look at these lovely choices", prompt="what to do> ")
     res = p.choose(m)

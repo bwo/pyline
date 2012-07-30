@@ -22,7 +22,7 @@ class Answer(object):
         return chosen # trivial conversion
     def convert(self, chosen, entered):
         res = self.do_convert(chosen, entered)
-        self.result = self.validate(res)
+        return self.validate(res)
 
 class Boundable(Answer):
     def __init__(self, below=None, above=None):

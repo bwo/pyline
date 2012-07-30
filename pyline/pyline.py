@@ -168,7 +168,7 @@ Context manager: on entry, output will no longer be colorized. ::
             answer = self.get_response(q)
             answer = q.answer_or_default(answer)
             try:
-                q.convert(answer)
+                ans = q.convert(answer)
             except BadAnswer, e:
                 handler = utils.get_by_class(e, q.responses)
                 if not handler:
@@ -180,11 +180,12 @@ Context manager: on entry, output will no longer be colorized. ::
                 if q.confirm is True:
                     confirmprompt = "Are you sure?  "
                 else:
-                    confirmprompt = q.confirm(q.answer.result)
+                    confirmprompt = q.confirm(ans)
                 if not self.agree(prompt=confirmprompt):
                     q.explain_error(self)
                     continue
-            return q.answer.result
+            return ans
+#            return q.answer.result
 
     def get_response(self, q):
         if q.first_answer:
@@ -239,7 +240,10 @@ Context manager: on entry, output will no longer be colorized. ::
 
     def get_line(self, q=None):
         ## uncertain about python's readline module: ignore it for now.
-        line = self.inp.readline()
+        if self.inp == sys.stdin:
+            line = raw_input()
+        else:
+            line = self.inp.readline()
         if not line: raise EOFError
         return line
 

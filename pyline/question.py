@@ -77,9 +77,11 @@ class Question(object):
     def convert(self, ans):
         cands = self.answer.get_candidates()
         if cands == None:
+            return self.answer.convert(ans, ans)
             self.answer.convert(ans, ans)
         else:
             choice = self.winnow(cands, ans)
+            return self.answer.convert(choice, ans)
             self.answer.convert(choice, ans)
 
     def answer_or_default(self, ans):
