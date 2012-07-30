@@ -6,13 +6,13 @@ def gather_int(times, pyl, q):
     answers = []
     for i in range(times):
         answers.append(pyl.ask(question=q))
-        q.prompt = ''
+#        q.prompt = ''
     return answers
 
 def _gather_function(f, pyl, q):
     answers = []
     answers.append(pyl.ask(q))
-    q.prompt = ''
+#    q.prompt = ''
     while not f(answers[-1]):
         answers.append(pyl.ask(q))
     answers.pop()
