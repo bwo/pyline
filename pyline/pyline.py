@@ -2,7 +2,7 @@
 """
 import sys
 import textwrap
-
+import readline
 from . import question
 from . import colors
 from .system import *
@@ -13,6 +13,20 @@ from . import utils
 from .menu import *
 from . import menu
 from .gather import gather_dispatch
+
+def get_completer():
+    return readline.get_completer()
+def clear_completer():
+    readline.set_completer()
+def set_completer(choices):
+    choices = sorted(map(str,choices))
+    def completer(txt, state):
+        if state == 0:
+            completer.options = [c for c in choices if c.startswith(txt)]
+        if state < len(completer.options):
+            return completer.options[state]
+        return None
+    readline.set_completer(completer)
 
 
 class PyLine(object):
@@ -103,7 +117,7 @@ class PyLine(object):
         """Alias for ``yes_or_no_style_p(prompt, ["yes", "no"])``
         """
         p = utils.insert_before_whitespace(prompt, " (yes or no)")
-        return self.yes_or_no_style_p(p, ["yes","no"])    
+        return self.yes_or_no_style_q(p, ["yes","no"]) == 'yes'
 
     def say(self, s, *vals, **keys):
         s = str(s)
@@ -241,7 +255,15 @@ Context manager: on entry, output will no longer be colorized. ::
     def get_line(self, q=None):
         ## uncertain about python's readline module: ignore it for now.
         if self.inp == sys.stdin:
+            set_here = False
+            if q:
+                cands = q.answer.get_candidates()
+                if cands and not get_completer():
+                    set_here = True
+                    set_completer(map(str,cands))
             line = raw_input()
+            if set_here:
+                clear_completer()
         else:
             line = self.inp.readline()
         if not line: raise EOFError
