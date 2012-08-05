@@ -104,7 +104,7 @@ class Question(object):
             self.first_answer = None    
 
     def append_default(self):
-        if not self.default: return
+        if self.default is None: return
         prompt = self.prompt
         if not prompt:
             self.prompt = "|%s|  " % self.default
